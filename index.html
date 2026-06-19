@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>$RAM — RAMCOIN | The Memory Supercycle on Solana</title>
+  <meta name="description" content="RAMCOIN ($RAM) — the Solana memecoin riding the great memory supercycle. RAM prices have skyrocketed on AI demand. Buy the supply shock." />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg" />
+  <link rel="apple-touch-icon" href="assets/logo.jpg" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="$RAM — RAMCOIN | The Memory Supercycle on Solana" />
+  <meta property="og:description" content="RAM prices skyrocketed on AI demand. The supply shock is real. $RAM on Solana." />
+  <meta property="og:image" content="assets/logo.jpg" />
+  <meta property="og:type" content="website" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Animated grid background -->
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+  <div class="scanlines"></div>
+
+  <!-- NAVBAR -->
+  <header class="nav" id="nav">
+    <a class="brand" href="#top">
+      <span class="brand-logo"><img src="assets/logo.jpg" alt="RAMCOIN logo" /></span>
+      <span class="brand-text">RAM<span class="accent">COIN</span></span>
+    </a>
+    <nav class="nav-links">
+      <a href="#about">Story</a>
+      <a href="#news">Supply Shock</a>
+      <a href="#tokenomics">Tokenomics</a>
+      <a href="#how">How to Buy</a>
+    </nav>
+    <a class="btn btn-primary nav-cta" href="https://pump.fun/coin/G5grLASvz1xzgdh1c1GKy2q55mfuDDXhMQoXnDxWpump" target="_blank" rel="noopener">Buy $RAM</a>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <div class="chip">
+          <span class="dot"></span> Live on Solana · pump.fun
+        </div>
+        <h1 class="hero-title">
+          The Memory<br />
+          <span class="gradient-text">Supercycle</span>
+        </h1>
+        <p class="hero-sub">
+          RAM prices have <strong>skyrocketed</strong> as AI companies devour global memory supply.
+          The supply shock is real — and now it has a ticker.
+          <span class="ticker-inline">$RAM</span>
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary btn-lg" href="https://pump.fun/coin/G5grLASvz1xzgdh1c1GKy2q55mfuDDXhMQoXnDxWpump" target="_blank" rel="noopener">
+            ⚡ Buy on pump.fun
+          </a>
+          <a class="btn btn-ghost btn-lg" href="#about">Read the Story</a>
+        </div>
+
+        <!-- Contract address -->
+        <div class="ca-box">
+          <span class="ca-label">Contract Address (CA)</span>
+          <div class="ca-row">
+            <code id="ca-text">G5grLASvz1xzgdh1c1GKy2q55mfuDDXhMQoXnDxWpump</code>
+            <button class="copy-btn" id="copy-btn" aria-label="Copy contract address">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3D RAM canvas -->
+      <div class="hero-3d">
+        <div class="canvas-frame">
+          <canvas id="ram-canvas"></canvas>
+          <div class="canvas-fallback" id="canvas-fallback">
+            <img src="assets/logo.jpg" alt="RAMCOIN" />
+          </div>
+        </div>
+        <div class="canvas-tag">DDR5 · INTERACTIVE — drag to spin</div>
+      </div>
+    </div>
+
+    <!-- Live stat ticker -->
+    <div class="marquee">
+      <div class="marquee-track">
+        <span>DRAM PRICES +110% Q1 2026</span><span class="sep">◆</span>
+        <span>AI = 20% OF GLOBAL DRAM</span><span class="sep">◆</span>
+        <span>HBM TAKES 93% OF FAB OUTPUT</span><span class="sep">◆</span>
+        <span>SSD PRICES +147%</span><span class="sep">◆</span>
+        <span>SUPPLY SHOCK ONGOING</span><span class="sep">◆</span>
+        <span>$RAM ON SOLANA</span><span class="sep">◆</span>
+        <span>DRAM PRICES +110% Q1 2026</span><span class="sep">◆</span>
+        <span>AI = 20% OF GLOBAL DRAM</span><span class="sep">◆</span>
+        <span>HBM TAKES 93% OF FAB OUTPUT</span><span class="sep">◆</span>
+        <span>SSD PRICES +147%</span><span class="sep">◆</span>
+        <span>SUPPLY SHOCK ONGOING</span><span class="sep">◆</span>
+        <span>$RAM ON SOLANA</span><span class="sep">◆</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT / STORY -->
+  <section class="section" id="about">
+    <div class="section-head">
+      <span class="kicker">// THE STORY</span>
+      <h2>Born from a real supply shock</h2>
+    </div>
+    <div class="story-grid">
+      <div class="story-card glass">
+        <p class="lead">
+          RAM prices have skyrocketed due to increased demand from AI companies,
+          sending waves through the tech world and online communities as the
+          supply shock continues.
+        </p>
+        <p>
+          Every chatbot, every GPU cluster, every frontier model is hungry for memory.
+          Samsung, SK Hynix and Micron have redirected the bulk of their fabs toward
+          high-bandwidth memory for AI data centers — and the rest of the world is left
+          fighting over what's left. The internet noticed. So we minted it.
+        </p>
+        <p class="signoff">
+          <strong>$RAM</strong> is the memecoin of the memory supercycle. No promises,
+          no roadmap PDFs — just the most relatable shortage in tech, tokenized on Solana.
+        </p>
+      </div>
+      <div class="story-side">
+        <div class="mini-stat glass">
+          <span class="mini-num" data-count="110" data-suffix="%">0%</span>
+          <span class="mini-label">Consumer RAM price jump in Q1 2026</span>
+        </div>
+        <div class="mini-stat glass">
+          <span class="mini-num" data-count="93" data-suffix="%">0%</span>
+          <span class="mini-label">Fab output redirected to AI / HBM</span>
+        </div>
+        <div class="mini-stat glass">
+          <span class="mini-num" data-count="2" data-suffix="x">0x</span>
+          <span class="mini-label">DRAM prices set to double in 2026</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWS / SUPPLY SHOCK -->
+  <section class="section" id="news">
+    <div class="section-head">
+      <span class="kicker">// SUPPLY SHOCK — THE RECEIPTS</span>
+      <h2>This is not financial advice. It's the news.</h2>
+      <p class="section-intro">
+        We didn't make the shortage up. The whole industry is screaming about it.
+        $RAM just gives the meme a home.
+      </p>
+    </div>
+    <div class="news-grid">
+      <article class="news-card glass">
+        <div class="news-tag">DEMAND</div>
+        <h3>AI is eating the world's memory</h3>
+        <p>AI is projected to consume around 20% of total DRAM production in 2026, starving consumer PCs, phones and servers of supply.</p>
+        <a href="https://spectrum.ieee.org/dram-shortage" target="_blank" rel="noopener">IEEE Spectrum ↗</a>
+      </article>
+      <article class="news-card glass">
+        <div class="news-tag">PRICE</div>
+        <h3>DRAM prices set to double</h3>
+        <p>Memory prices are expected to double in Q1 2026 as AI ambitions push memory fabs to their absolute limit.</p>
+        <a href="https://www.theregister.com/2026/02/02/dram_prices_expected_to_double/" target="_blank" rel="noopener">The Register ↗</a>
+      </article>
+      <article class="news-card glass">
+        <div class="news-tag">SOLD OUT</div>
+        <h3>AI memory is sold out</h3>
+        <p>HBM for AI accelerators is effectively sold out, causing an unprecedented surge in prices across the memory market.</p>
+        <a href="https://www.cnbc.com/2026/01/10/micron-ai-memory-shortage-hbm-nvidia-samsung.html" target="_blank" rel="noopener">CNBC ↗</a>
+      </article>
+      <article class="news-card glass">
+        <div class="news-tag">SUPPLY</div>
+        <h3>Only two suppliers left</h3>
+        <p>With Micron winding down Crucial consumer products, Samsung and SK Hynix are left as the dominant suppliers of consumer DRAM.</p>
+        <a href="https://wccftech.com/roundup/memory-crisis/" target="_blank" rel="noopener">Wccftech ↗</a>
+      </article>
+      <article class="news-card glass">
+        <div class="news-tag">HBM</div>
+        <h3>HBM takes 23% of DRAM wafers</h3>
+        <p>High-bandwidth memory now consumes a huge slice of total wafer output, squeezing everything else off the line.</p>
+        <a href="https://tech-insider.org/memory-chip-shortage-2026-ai-consumer-electronics/" target="_blank" rel="noopener">Tech-Insider ↗</a>
+      </article>
+      <article class="news-card glass">
+        <div class="news-tag">CONSUMER</div>
+        <h3>What's going on with RAM?</h3>
+        <p>Surging prices, AI demand and global tech market disruption have made RAM the most talked-about component on the internet.</p>
+        <a href="https://www.windowscentral.com/hardware/ram-price-crisis-what-need-know" target="_blank" rel="noopener">Windows Central ↗</a>
+      </article>
+    </div>
+  </section>
+
+  <!-- TOKENOMICS -->
+  <section class="section" id="tokenomics">
+    <div class="section-head">
+      <span class="kicker">// TOKENOMICS</span>
+      <h2>Pure as a fresh DIMM</h2>
+    </div>
+    <div class="tok-grid">
+      <div class="tok-card glass">
+        <span class="tok-icon">🧠</span>
+        <span class="tok-value">$RAM</span>
+        <span class="tok-key">Ticker</span>
+      </div>
+      <div class="tok-card glass">
+        <span class="tok-icon">🟣</span>
+        <span class="tok-value">Solana</span>
+        <span class="tok-key">Network</span>
+      </div>
+      <div class="tok-card glass">
+        <span class="tok-icon">🔒</span>
+        <span class="tok-value">Burned</span>
+        <span class="tok-key">Liquidity</span>
+      </div>
+      <div class="tok-card glass">
+        <span class="tok-icon">0%</span>
+        <span class="tok-value">Tax</span>
+        <span class="tok-key">Buy / Sell</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW TO BUY -->
+  <section class="section" id="how">
+    <div class="section-head">
+      <span class="kicker">// HOW TO BUY</span>
+      <h2>Upgrade your bags in 4 steps</h2>
+    </div>
+    <div class="steps">
+      <div class="step glass">
+        <span class="step-num">01</span>
+        <h3>Get a Solana wallet</h3>
+        <p>Download Phantom or Solflare and set up your wallet in seconds.</p>
+      </div>
+      <div class="step glass">
+        <span class="step-num">02</span>
+        <h3>Fund with SOL</h3>
+        <p>Buy SOL on any exchange and send it to your wallet address.</p>
+      </div>
+      <div class="step glass">
+        <span class="step-num">03</span>
+        <h3>Open pump.fun</h3>
+        <p>Paste the $RAM contract address and connect your wallet.</p>
+      </div>
+      <div class="step glass">
+        <span class="step-num">04</span>
+        <h3>Swap for $RAM</h3>
+        <p>Confirm the swap. Welcome to the memory supercycle.</p>
+      </div>
+    </div>
+    <div class="cta-final">
+      <a class="btn btn-primary btn-lg" href="https://pump.fun/coin/G5grLASvz1xzgdh1c1GKy2q55mfuDDXhMQoXnDxWpump" target="_blank" rel="noopener">⚡ Buy $RAM now</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="brand-logo small"><img src="assets/logo.jpg" alt="RAMCOIN logo" /></span>
+        <span class="brand-text">RAM<span class="accent">COIN</span></span>
+      </div>
+      <p class="footer-ca"><span>CA:</span> G5grLASvz1xzgdh1c1GKy2q55mfuDDXhMQoXnDxWpump</p>
+      <p class="disclaimer">
+        $RAM is a meme coin with no intrinsic value or expectation of financial return.
+        It exists for entertainment and community. Crypto is volatile — do your own research.
+        Not affiliated with Samsung, SK Hynix, Micron or any memory manufacturer.
+      </p>
+      <p class="copyright">© 2026 RAMCOIN · Built for the supply shock</p>
+    </div>
+  </footer>
+
+  <!-- Three.js for 3D RAM -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
