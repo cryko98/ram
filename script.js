@@ -102,25 +102,39 @@
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   if (THREE.sRGBEncoding) renderer.outputEncoding = THREE.sRGBEncoding;
 
-  // ----- Lights (neutral studio lighting for realistic metal) -----
-  scene.add(new THREE.AmbientLight(0x9aa3b8, 0.85));
-  const key = new THREE.DirectionalLight(0xffffff, 1.55); key.position.set(5, 7, 8); scene.add(key);
-  const fill = new THREE.DirectionalLight(0xbcd0ff, 0.55); fill.position.set(-6, 1, 6); scene.add(fill);
-  const backLight = new THREE.DirectionalLight(0xd6e6ff, 0.6); backLight.position.set(-2, 3, -8); scene.add(backLight);
-  const spec = new THREE.PointLight(0xffffff, 0.7, 60); spec.position.set(2, 5, 7); scene.add(spec);
+  // ----- Lights (cool key raking from upper-left so the flat face stays dark, edges catch light) -----
+  scene.add(new THREE.AmbientLight(0x7e88a0, 0.42));
+  const key = new THREE.DirectionalLight(0xffffff, 1.7); key.position.set(-7, 8, 3.5); scene.add(key);
+  const fill = new THREE.DirectionalLight(0x9fb6e8, 0.32); fill.position.set(6, 0, 6); scene.add(fill);
+  const rim = new THREE.DirectionalLight(0x6fd2ff, 0.85); rim.position.set(3, 4, -7); scene.add(rim);
+  const spec = new THREE.PointLight(0xeaf2ff, 0.8, 60); spec.position.set(-4, 7, 6); scene.add(spec);
 
   // ----- Materials -----
-  const pcbMat = new THREE.MeshStandardMaterial({ color: 0x0c0d10, metalness: 0.35, roughness: 0.55 });
-  const chipMat = new THREE.MeshStandardMaterial({ color: 0x17181c, metalness: 0.45, roughness: 0.32 });
-  const metalMain = new THREE.MeshStandardMaterial({ color: 0x70757e, metalness: 0.85, roughness: 0.42 });
-  const metalLight = new THREE.MeshStandardMaterial({ color: 0x9aa0aa, metalness: 0.88, roughness: 0.34 });
-  const metalDark = new THREE.MeshStandardMaterial({ color: 0x3c4047, metalness: 0.8, roughness: 0.4 });
+  const pcbMat = new THREE.MeshStandardMaterial({ color: 0x0a0b0e, metalness: 0.3, roughness: 0.6 });
+  const chipMat = new THREE.MeshStandardMaterial({ color: 0x141417, metalness: 0.4, roughness: 0.35 });
+  // brushed-metal micro-texture (varies roughness → realistic anodized aluminium sheen)
+  function brushedTex() {
+    const c = document.createElement("canvas"); c.width = 256; c.height = 64;
+    const ctx = c.getContext("2d"); ctx.fillStyle = "#808080"; ctx.fillRect(0, 0, 256, 64);
+    for (let i = 0; i < 900; i++) {
+      const y = ((Math.sin(i * 91.7) * 4391.3) % 1) * 64;
+      const v = 90 + ((Math.sin(i * 12.3) * 233.1) % 1) * 110;
+      ctx.strokeStyle = "rgba(" + (v | 0) + "," + (v | 0) + "," + (v | 0) + ",0.5)";
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(256, y + (((Math.sin(i) % 1)) * 2)); ctx.stroke();
+    }
+    const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(3, 1); return t;
+  }
+  const brush = brushedTex();
+  const metalBody = new THREE.MeshStandardMaterial({ color: 0x3a3e46, metalness: 0.72, roughness: 0.46, roughnessMap: brush });
+  const metalHi = new THREE.MeshStandardMaterial({ color: 0xb4bbc6, metalness: 0.92, roughness: 0.24, roughnessMap: brush });
+  const metalRecess = new THREE.MeshStandardMaterial({ color: 0x131418, metalness: 0.55, roughness: 0.5 });
+  const grooveMat = new THREE.MeshStandardMaterial({ color: 0x0c0d10, metalness: 0.5, roughness: 0.6 });
   const slotMat = new THREE.MeshStandardMaterial({ color: 0x050608, metalness: 0.3, roughness: 0.7 });
   const goldMat = new THREE.MeshStandardMaterial({ color: 0xe9bd55, metalness: 0.95, roughness: 0.3 });
 
   // ----- Build the module -----
   const ram = new THREE.Group();
-  const BW = 6.4, BH = 2.5, BD = 0.16;
+  const BW = 6.2, BH = 2.5, BD = 0.16;
   const zF = BD / 2;
 
   // PCB board (dark)
@@ -128,72 +142,76 @@
   ram.add(board);
 
   // Black memory chips on the exposed lower PCB (front + back)
-  const chipGeo = new THREE.BoxGeometry(0.62, 0.62, 0.06);
+  const chipGeo = new THREE.BoxGeometry(0.6, 0.66, 0.055);
   for (let i = 0; i < 8; i++) {
-    const x = -2.45 + i * 0.70;
-    const cf = new THREE.Mesh(chipGeo, chipMat); cf.position.set(x, -0.74, zF + 0.03); ram.add(cf);
-    const cb = new THREE.Mesh(chipGeo, chipMat); cb.position.set(x, -0.74, -zF - 0.03); ram.add(cb);
+    const x = -2.38 + i * 0.68;
+    const cf = new THREE.Mesh(chipGeo, chipMat); cf.position.set(x, -0.82, zF + 0.03); ram.add(cf);
+    const cb = new THREE.Mesh(chipGeo, chipMat); cb.position.set(x, -0.82, -zF - 0.03); ram.add(cb);
   }
 
-  // Heatspreader (angular silver/gunmetal) covering the upper portion — front & back
-  const HS_Y = 0.55, HS_H = 1.5;
-  function buildHeatspreader(face) {
-    const g = new THREE.Group();
-    const s = face; // +1 front, -1 back
-    // main plate
-    const plate = new THREE.Mesh(new THREE.BoxGeometry(BW - 0.1, HS_H, 0.14), metalMain);
-    plate.position.set(0, HS_Y, s * (zF + 0.07)); g.add(plate);
-    // raised central band (where the logo sits)
-    const band = new THREE.Mesh(new THREE.BoxGeometry(BW - 0.1, 0.86, 0.10), metalLight);
-    band.position.set(0, HS_Y - 0.02, s * (zF + 0.18)); g.add(band);
-    // angular dark facets flanking the band
+  // Heatspreader — single extruded bar with an aggressive stepped angular crown
+  const HS_Y = 0.45;
+  const hw = (BW - 0.2) / 2;                 // half width of heatspreader
+  const yB = -0.78, ySide = 0.30, yStep = 0.46, yTop = 0.78; // crown profile heights (local)
+  const shape = new THREE.Shape();
+  shape.moveTo(-hw, yB);
+  shape.lineTo(-hw, ySide);
+  shape.lineTo(-hw + 0.5, ySide);
+  shape.lineTo(-hw + 0.62, yStep);
+  shape.lineTo(-1.95, yStep);
+  shape.lineTo(-1.6, yTop);
+  shape.lineTo(1.6, yTop);
+  shape.lineTo(1.95, yStep);
+  shape.lineTo(hw - 0.62, yStep);
+  shape.lineTo(hw - 0.5, ySide);
+  shape.lineTo(hw, ySide);
+  shape.lineTo(hw, yB);
+  shape.closePath();
+  const hsGeo = new THREE.ExtrudeGeometry(shape, { depth: 0.34, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.05, bevelSegments: 2, steps: 1 });
+  hsGeo.translate(0, 0, -0.17); // centre depth so the heatsink wraps the module
+  const heatspreader = new THREE.Mesh(hsGeo, metalBody);
+  heatspreader.position.y = HS_Y; ram.add(heatspreader);
+
+  // machined bright top edge (catches light along the crown like the photo)
+  const topHi = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.05, 0.50), metalHi);
+  topHi.position.set(0, HS_Y + yTop - 0.02, 0); ram.add(topHi);
+  [-1, 1].forEach((s) => {
+    const sh = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.05, 0.50), metalHi);
+    sh.position.set(s * (hw - 0.75), HS_Y + yStep - 0.02, 0); ram.add(sh);
+  });
+
+  // raised centre panel that holds the glowing logo (both faces), sits proud of the bevel
+  const PANEL_Z = 0.26;
+  function centrePanel(s) {
+    const p = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.98, 0.05), metalRecess);
+    p.position.set(0, HS_Y - 0.02, s * PANEL_Z); ram.add(p);
+    // angular accent grooves flanking the panel
     [-1, 1].forEach((sx) => {
-      const fac = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.1, 0.07), metalDark);
-      fac.position.set(sx * (BW / 2 - 0.55), HS_Y - 0.05, s * (zF + 0.2));
-      fac.rotation.z = sx * 0.42; g.add(fac);
-      // diagonal accent line
-      const acc = new THREE.Mesh(new THREE.BoxGeometry(0.045, 1.0, 0.03), metalDark);
-      acc.position.set(sx * (BW / 2 - 1.15), HS_Y, s * (zF + 0.235));
-      acc.rotation.z = sx * 0.5; g.add(acc);
+      const gv = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.9, 0.03), grooveMat);
+      gv.position.set(sx * 2.1, HS_Y, s * (PANEL_Z + 0.02)); gv.rotation.z = sx * 0.32; ram.add(gv);
+      const gv2 = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.7, 0.03), grooveMat);
+      gv2.position.set(sx * 2.4, HS_Y, s * (PANEL_Z + 0.02)); gv2.rotation.z = sx * 0.32; ram.add(gv2);
     });
-    // pointed angular end caps
-    [-1, 1].forEach((sx) => {
-      const cap = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.95, 0.13), metalMain);
-      cap.position.set(sx * (BW / 2 - 0.18), HS_Y, s * (zF + 0.06));
-      cap.rotation.z = sx * 0.62; g.add(cap);
-    });
-    // top crest with faceted ridge
-    const crest = new THREE.Mesh(new THREE.BoxGeometry(BW - 0.1, 0.2, 0.2), metalDark);
-    crest.position.set(0, HS_Y + HS_H / 2 - 0.02, s * (zF + 0.04)); g.add(crest);
-    for (let i = 0; i < 14; i++) {
-      const d = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.16, 0.1), metalMain);
-      d.position.set(-2.85 + i * 0.44, HS_Y + HS_H / 2 - 0.02, s * (zF + 0.12));
-      d.rotation.z = Math.PI / 4; g.add(d);
-    }
-    return g;
   }
-  ram.add(buildHeatspreader(1));
-  ram.add(buildHeatspreader(-1));
+  centrePanel(1); centrePanel(-1);
 
   // "Ram Coin" glowing logo (matches the reference image)
   function makeLogoTexture() {
     const c = document.createElement("canvas"); c.width = 1024; c.height = 256;
     const ctx = c.getContext("2d"); ctx.clearRect(0, 0, 1024, 256);
     ctx.textAlign = "center";
-    // main title
-    ctx.font = "700 120px 'Space Grotesk', Arial, sans-serif";
-    ctx.fillStyle = "#dff5ff"; ctx.shadowColor = "#37c6ff"; ctx.shadowBlur = 34;
-    ctx.fillText("Ram Coin", 512, 130);
-    // subtitle
-    ctx.shadowBlur = 10; ctx.font = "600 38px 'JetBrains Mono', monospace";
-    ctx.fillStyle = "#7fd0ef";
-    ctx.fillText("X P E R T   P E R F O R M A N C E", 512, 196);
+    ctx.font = "600 124px 'Space Grotesk', Arial, sans-serif";
+    ctx.fillStyle = "#eafaff"; ctx.shadowColor = "#3fc8ff"; ctx.shadowBlur = 36;
+    ctx.fillText("Ram Coin", 512, 124);
+    ctx.shadowBlur = 12; ctx.font = "600 36px 'JetBrains Mono', monospace";
+    ctx.fillStyle = "#8fd6f2";
+    ctx.fillText("X P E R T   P E R F O R M A N C E", 512, 194);
     const tex = new THREE.CanvasTexture(c); tex.anisotropy = 4; return tex;
   }
-  const logoMat = new THREE.MeshStandardMaterial({ map: makeLogoTexture(), transparent: true, emissive: 0x33b8ff, emissiveIntensity: 0.55, metalness: 0.1, roughness: 0.6 });
+  const logoMat = new THREE.MeshStandardMaterial({ map: makeLogoTexture(), transparent: true, emissive: 0x36bdff, emissiveIntensity: 0.6, metalness: 0.1, roughness: 0.6 });
   const logoGeo = new THREE.PlaneGeometry(3.5, 0.875);
-  const logoF = new THREE.Mesh(logoGeo, logoMat); logoF.position.set(0, HS_Y - 0.02, zF + 0.30); ram.add(logoF);
-  const logoB = new THREE.Mesh(logoGeo, logoMat); logoB.position.set(0, HS_Y - 0.02, -(zF + 0.30)); logoB.rotation.y = Math.PI; ram.add(logoB);
+  const logoF = new THREE.Mesh(logoGeo, logoMat); logoF.position.set(0, HS_Y - 0.02, 0.291); ram.add(logoF);
+  const logoB = new THREE.Mesh(logoGeo, logoMat); logoB.position.set(0, HS_Y - 0.02, -0.291); logoB.rotation.y = Math.PI; ram.add(logoB);
 
   // Gold edge connector fingers (textured strip) + key notch
   const notchX = -0.85;
