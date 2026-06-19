@@ -95,145 +95,133 @@
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(32, W / H, 0.1, 100);
-  camera.position.set(0, 0.1, 11.5);
+  camera.position.set(0, 0.1, 12.6);
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setSize(W, H, false);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   if (THREE.sRGBEncoding) renderer.outputEncoding = THREE.sRGBEncoding;
 
-  // ----- Lights -----
-  scene.add(new THREE.AmbientLight(0x6a72a0, 0.7));
-  const key = new THREE.DirectionalLight(0xffffff, 1.05); key.position.set(4, 6, 9); scene.add(key);
-  const fill = new THREE.DirectionalLight(0xc7d2ff, 0.4); fill.position.set(-5, 1, 7); scene.add(fill);
-  const backLight = new THREE.DirectionalLight(0xbfeaff, 0.45); backLight.position.set(0, 2, -8); scene.add(backLight);
-  const cyan = new THREE.PointLight(0x00e5ff, 1.2, 50); cyan.position.set(-8, 3, 6); scene.add(cyan);
-  const violet = new THREE.PointLight(0x7a5cff, 1.1, 50); violet.position.set(8, -2, 5); scene.add(violet);
+  // ----- Lights (neutral studio lighting for realistic metal) -----
+  scene.add(new THREE.AmbientLight(0x9aa3b8, 0.85));
+  const key = new THREE.DirectionalLight(0xffffff, 1.55); key.position.set(5, 7, 8); scene.add(key);
+  const fill = new THREE.DirectionalLight(0xbcd0ff, 0.55); fill.position.set(-6, 1, 6); scene.add(fill);
+  const backLight = new THREE.DirectionalLight(0xd6e6ff, 0.6); backLight.position.set(-2, 3, -8); scene.add(backLight);
+  const spec = new THREE.PointLight(0xffffff, 0.7, 60); spec.position.set(2, 5, 7); scene.add(spec);
 
   // ----- Materials -----
-  const boardMat = new THREE.MeshStandardMaterial({ color: 0x0d8240, metalness: 0.3, roughness: 0.55 });
-  const boardEdgeMat = new THREE.MeshStandardMaterial({ color: 0x0a5e30, metalness: 0.3, roughness: 0.6 });
-  const chipMat = new THREE.MeshStandardMaterial({ color: 0x131316, metalness: 0.5, roughness: 0.45 });
-  const chipTopMat = new THREE.MeshStandardMaterial({ color: 0x1b1b20, metalness: 0.55, roughness: 0.4 });
-  const slotMat = new THREE.MeshStandardMaterial({ color: 0x040406, metalness: 0.3, roughness: 0.7 });
-  const darkMat = new THREE.MeshStandardMaterial({ color: 0x0b0b0e, metalness: 0.35, roughness: 0.6 });
-  const goldMat = new THREE.MeshStandardMaterial({ color: 0xf2c24a, metalness: 0.9, roughness: 0.3, emissive: 0x4a3500, emissiveIntensity: 0.3 });
-  const traceMat = new THREE.MeshStandardMaterial({ color: 0x0a3a2a, emissive: 0x00e5ff, emissiveIntensity: 0.6, metalness: 0.4, roughness: 0.5 });
+  const pcbMat = new THREE.MeshStandardMaterial({ color: 0x0c0d10, metalness: 0.35, roughness: 0.55 });
+  const chipMat = new THREE.MeshStandardMaterial({ color: 0x17181c, metalness: 0.45, roughness: 0.32 });
+  const metalMain = new THREE.MeshStandardMaterial({ color: 0x70757e, metalness: 0.85, roughness: 0.42 });
+  const metalLight = new THREE.MeshStandardMaterial({ color: 0x9aa0aa, metalness: 0.88, roughness: 0.34 });
+  const metalDark = new THREE.MeshStandardMaterial({ color: 0x3c4047, metalness: 0.8, roughness: 0.4 });
+  const slotMat = new THREE.MeshStandardMaterial({ color: 0x050608, metalness: 0.3, roughness: 0.7 });
+  const goldMat = new THREE.MeshStandardMaterial({ color: 0xe9bd55, metalness: 0.95, roughness: 0.3 });
 
   // ----- Build the module -----
   const ram = new THREE.Group();
-  const BW = 7.4, BH = 2.5, BD = 0.16;
+  const BW = 6.4, BH = 2.5, BD = 0.16;
+  const zF = BD / 2;
 
-  // PCB board
-  const board = new THREE.Mesh(new THREE.BoxGeometry(BW, BH, BD), boardMat);
+  // PCB board (dark)
+  const board = new THREE.Mesh(new THREE.BoxGeometry(BW, BH, BD), pcbMat);
   ram.add(board);
-  // thin darker back to give depth
-  const back = new THREE.Mesh(new THREE.BoxGeometry(BW, BH, BD * 0.5), boardEdgeMat);
-  back.position.z = -BD * 0.5; ram.add(back);
 
-  // Black chips with horizontal ridge slots (built facing +z, local origin)
-  function makeChip() {
+  // Black memory chips on the exposed lower PCB (front + back)
+  const chipGeo = new THREE.BoxGeometry(0.62, 0.62, 0.06);
+  for (let i = 0; i < 8; i++) {
+    const x = -2.45 + i * 0.70;
+    const cf = new THREE.Mesh(chipGeo, chipMat); cf.position.set(x, -0.74, zF + 0.03); ram.add(cf);
+    const cb = new THREE.Mesh(chipGeo, chipMat); cb.position.set(x, -0.74, -zF - 0.03); ram.add(cb);
+  }
+
+  // Heatspreader (angular silver/gunmetal) covering the upper portion — front & back
+  const HS_Y = 0.55, HS_H = 1.5;
+  function buildHeatspreader(face) {
     const g = new THREE.Group();
-    const body = new THREE.Mesh(new THREE.BoxGeometry(1.56, 1.32, 0.20), chipMat);
-    g.add(body);
-    const cap = new THREE.Mesh(new THREE.BoxGeometry(1.44, 1.20, 0.06), chipTopMat);
-    cap.position.z = 0.12; g.add(cap);
-    for (let k = -1; k <= 1; k++) {
-      const slot = new THREE.Mesh(new THREE.BoxGeometry(1.16, 0.17, 0.05), slotMat);
-      slot.position.set(0, k * 0.34, 0.15);
-      g.add(slot);
+    const s = face; // +1 front, -1 back
+    // main plate
+    const plate = new THREE.Mesh(new THREE.BoxGeometry(BW - 0.1, HS_H, 0.14), metalMain);
+    plate.position.set(0, HS_Y, s * (zF + 0.07)); g.add(plate);
+    // raised central band (where the logo sits)
+    const band = new THREE.Mesh(new THREE.BoxGeometry(BW - 0.1, 0.86, 0.10), metalLight);
+    band.position.set(0, HS_Y - 0.02, s * (zF + 0.18)); g.add(band);
+    // angular dark facets flanking the band
+    [-1, 1].forEach((sx) => {
+      const fac = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.1, 0.07), metalDark);
+      fac.position.set(sx * (BW / 2 - 0.55), HS_Y - 0.05, s * (zF + 0.2));
+      fac.rotation.z = sx * 0.42; g.add(fac);
+      // diagonal accent line
+      const acc = new THREE.Mesh(new THREE.BoxGeometry(0.045, 1.0, 0.03), metalDark);
+      acc.position.set(sx * (BW / 2 - 1.15), HS_Y, s * (zF + 0.235));
+      acc.rotation.z = sx * 0.5; g.add(acc);
+    });
+    // pointed angular end caps
+    [-1, 1].forEach((sx) => {
+      const cap = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.95, 0.13), metalMain);
+      cap.position.set(sx * (BW / 2 - 0.18), HS_Y, s * (zF + 0.06));
+      cap.rotation.z = sx * 0.62; g.add(cap);
+    });
+    // top crest with faceted ridge
+    const crest = new THREE.Mesh(new THREE.BoxGeometry(BW - 0.1, 0.2, 0.2), metalDark);
+    crest.position.set(0, HS_Y + HS_H / 2 - 0.02, s * (zF + 0.04)); g.add(crest);
+    for (let i = 0; i < 14; i++) {
+      const d = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.16, 0.1), metalMain);
+      d.position.set(-2.85 + i * 0.44, HS_Y + HS_H / 2 - 0.02, s * (zF + 0.12));
+      d.rotation.z = Math.PI / 4; g.add(d);
     }
-    const dot = new THREE.Mesh(new THREE.CircleGeometry(0.045, 14),
-      new THREE.MeshStandardMaterial({ color: 0x05060c, emissive: 0x00e5ff, emissiveIntensity: 1.6 }));
-    dot.position.set(-0.62, 0.46, 0.16); g.add(dot);
     return g;
   }
-  // double-sided: chips on front (+z) and back (-z)
-  [-2.6, -0.86, 0.86, 2.6].forEach((x) => {
-    const f = makeChip(); f.position.set(x, 0.12, BD / 2 + 0.02); ram.add(f);
-    const b = makeChip(); b.position.set(x, 0.12, -(BD / 2 + 0.02)); b.rotation.y = Math.PI; ram.add(b);
-  });
+  ram.add(buildHeatspreader(1));
+  ram.add(buildHeatspreader(-1));
 
-  // Top retention tabs (two small black tabs like the photo)
-  [-1.4, 1.4].forEach((x) => {
-    const tab = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.22, 0.32), darkMat);
-    tab.position.set(x, BH / 2 + 0.02, 0.06); ram.add(tab);
-  });
-
-  // Corner screw holes (gold ring + dark center)
-  [-1, 1].forEach((sx) => {
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.04, 10, 22), goldMat);
-    ring.position.set(sx * (BW / 2 - 0.45), BH / 2 - 0.35, BD / 2 + 0.02); ram.add(ring);
-    const hole = new THREE.Mesh(new THREE.CircleGeometry(0.10, 18), slotMat);
-    hole.position.set(sx * (BW / 2 - 0.45), BH / 2 - 0.35, BD / 2 + 0.03); ram.add(hole);
-  });
-
-  // Glowing futuristic traces on the green PCB
-  const traces = [];
-  function addTrace(x, y, w, h) {
-    const t = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.03), traceMat.clone());
-    t.position.set(x, y, BD / 2 + 0.015); ram.add(t); traces.push(t);
-  }
-  addTrace(0, BH / 2 - 0.08, BW - 0.6, 0.035);      // top rail
-  addTrace(0, -BH / 2 + 0.55, BW - 0.6, 0.035);     // bottom rail
-  addTrace(-BW / 2 + 0.25, 0, 0.035, BH - 0.7);     // left riser
-  addTrace(BW / 2 - 0.25, 0, 0.035, BH - 0.7);      // right riser
-  [-1.73, 0, 1.73].forEach((x) => addTrace(x, -BH / 2 + 0.9, 0.035, 0.7)); // verticals between chips
-
-  // Glowing $RAM badge (silkscreen, futuristic)
-  function makeLabelTexture() {
-    const c = document.createElement("canvas"); c.width = 512; c.height = 128;
-    const ctx = c.getContext("2d"); ctx.clearRect(0, 0, 512, 128);
-    ctx.font = "900 84px Orbitron, Arial, sans-serif";
-    ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    const grad = ctx.createLinearGradient(0, 0, 512, 0);
-    grad.addColorStop(0, "#00e5ff"); grad.addColorStop(0.5, "#ffffff"); grad.addColorStop(1, "#ff3df0");
-    ctx.fillStyle = grad; ctx.shadowColor = "#00e5ff"; ctx.shadowBlur = 22;
-    ctx.fillText("$RAM", 256, 70);
+  // "Ram Coin" glowing logo (matches the reference image)
+  function makeLogoTexture() {
+    const c = document.createElement("canvas"); c.width = 1024; c.height = 256;
+    const ctx = c.getContext("2d"); ctx.clearRect(0, 0, 1024, 256);
+    ctx.textAlign = "center";
+    // main title
+    ctx.font = "700 120px 'Space Grotesk', Arial, sans-serif";
+    ctx.fillStyle = "#dff5ff"; ctx.shadowColor = "#37c6ff"; ctx.shadowBlur = 34;
+    ctx.fillText("Ram Coin", 512, 130);
+    // subtitle
+    ctx.shadowBlur = 10; ctx.font = "600 38px 'JetBrains Mono', monospace";
+    ctx.fillStyle = "#7fd0ef";
+    ctx.fillText("X P E R T   P E R F O R M A N C E", 512, 196);
     const tex = new THREE.CanvasTexture(c); tex.anisotropy = 4; return tex;
   }
-  const labelMat = new THREE.MeshStandardMaterial({ map: makeLabelTexture(), transparent: true, emissive: 0x00e5ff, emissiveIntensity: 0.7, metalness: 0.2, roughness: 0.5 });
-  const label = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 0.42), labelMat);
-  label.position.set(0, -BH / 2 + 0.9, BD / 2 + 0.04); ram.add(label);
-  const labelBack = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 0.42), labelMat);
-  labelBack.position.set(0, -BH / 2 + 0.9, -(BD / 2 + 0.04)); labelBack.rotation.y = Math.PI; ram.add(labelBack);
+  const logoMat = new THREE.MeshStandardMaterial({ map: makeLogoTexture(), transparent: true, emissive: 0x33b8ff, emissiveIntensity: 0.55, metalness: 0.1, roughness: 0.6 });
+  const logoGeo = new THREE.PlaneGeometry(3.5, 0.875);
+  const logoF = new THREE.Mesh(logoGeo, logoMat); logoF.position.set(0, HS_Y - 0.02, zF + 0.30); ram.add(logoF);
+  const logoB = new THREE.Mesh(logoGeo, logoMat); logoB.position.set(0, HS_Y - 0.02, -(zF + 0.30)); logoB.rotation.y = Math.PI; ram.add(logoB);
 
-  // Gold edge connector fingers (single textured strip per side = cheap)
-  const notchX = -0.9;
+  // Gold edge connector fingers (textured strip) + key notch
+  const notchX = -0.85;
   function makeFingerTex() {
     const c = document.createElement("canvas"); c.width = 1024; c.height = 128;
     const ctx = c.getContext("2d"); ctx.clearRect(0, 0, 1024, 128);
     const notchPx = ((notchX + BW / 2) / BW) * 1024;
-    for (let i = 0; i < 60; i++) {
-      const x = 28 + i * 16.4;
-      if (Math.abs(x - notchPx) < 26) continue; // key-notch gap
+    for (let i = 0; i < 58; i++) {
+      const x = 26 + i * 16.8;
+      if (Math.abs(x - notchPx) < 26) continue;
       const g = ctx.createLinearGradient(0, 0, 0, 128);
-      g.addColorStop(0, "#ffe08a"); g.addColorStop(0.5, "#f2c24a"); g.addColorStop(1, "#b9882a");
-      ctx.fillStyle = g; ctx.fillRect(x, 6, 10, 116);
+      g.addColorStop(0, "#ffe9a8"); g.addColorStop(0.5, "#e9bd55"); g.addColorStop(1, "#a87c2a");
+      ctx.fillStyle = g; ctx.fillRect(x, 10, 10, 110);
     }
     const tex = new THREE.CanvasTexture(c); tex.anisotropy = 4; return tex;
   }
-  const fingerMat = new THREE.MeshStandardMaterial({ map: makeFingerTex(), transparent: true, metalness: 0.9, roughness: 0.3, emissive: 0x3a2900, emissiveIntensity: 0.25 });
-  const fingerGeo = new THREE.PlaneGeometry(BW - 0.04, 0.46);
-  const fingerF = new THREE.Mesh(fingerGeo, fingerMat); fingerF.position.set(0, -BH / 2 + 0.18, BD / 2 + 0.012); ram.add(fingerF);
-  const fingerB = new THREE.Mesh(fingerGeo, fingerMat); fingerB.position.set(0, -BH / 2 + 0.18, -(BD / 2 + 0.012)); fingerB.rotation.y = Math.PI; ram.add(fingerB);
-  // key notch (physical cut look)
-  const notch = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.5, BD + 0.05), slotMat);
-  notch.position.set(notchX, -BH / 2 + 0.12, 0); ram.add(notch);
+  const fingerMat = new THREE.MeshStandardMaterial({ map: makeFingerTex(), transparent: true, metalness: 0.95, roughness: 0.3 });
+  const fingerGeo = new THREE.PlaneGeometry(BW - 0.04, 0.4);
+  const fingerF = new THREE.Mesh(fingerGeo, fingerMat); fingerF.position.set(0, -BH / 2 + 0.16, zF + 0.012); ram.add(fingerF);
+  const fingerB = new THREE.Mesh(fingerGeo, fingerMat); fingerB.position.set(0, -BH / 2 + 0.16, -(zF + 0.012)); fingerB.rotation.y = Math.PI; ram.add(fingerB);
+  const notch = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.46, BD + 0.05), slotMat);
+  notch.position.set(notchX, -BH / 2 + 0.1, 0); ram.add(notch);
 
-  // small blinking status LEDs
-  const leds = [];
-  [[-3.3, 0.95, 0x2bff9b], [3.3, 0.95, 0x00e5ff]].forEach(([x, y, col]) => {
-    const led = new THREE.Mesh(new THREE.CircleGeometry(0.06, 16),
-      new THREE.MeshStandardMaterial({ color: 0x05060c, emissive: col, emissiveIntensity: 1.4 }));
-    led.position.set(x, y, BD / 2 + 0.02); leds.push(led); ram.add(led);
-  });
-
-  ram.rotation.x = 0.05;
+  ram.rotation.x = 0.04;
   scene.add(ram);
 
-  // ----- Floating particles + back ring -----
-  const pCount = 80;
+  // subtle floating dust + soft back ring (kept very low-key)
+  const pCount = 46;
   const pGeo = new THREE.BufferGeometry();
   const pPos = new Float32Array(pCount * 3);
   for (let i = 0; i < pCount; i++) {
@@ -242,20 +230,17 @@
     pPos[i * 3 + 2] = ((Math.sin(i * 4.7) * 9812.3) % 1) * 8 - 5;
   }
   pGeo.setAttribute("position", new THREE.BufferAttribute(pPos, 3));
-  const particles = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0x00e5ff, size: 0.05, transparent: true, opacity: 0.5, depthWrite: false }));
+  const particles = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0x7fb8d8, size: 0.045, transparent: true, opacity: 0.35, depthWrite: false }));
   scene.add(particles);
-  const ring = new THREE.Mesh(new THREE.TorusGeometry(4.0, 0.45, 16, 64),
-    new THREE.MeshBasicMaterial({ color: 0x7a5cff, transparent: true, opacity: 0.09 }));
-  ring.position.z = -2.6; scene.add(ring);
 
   // ----- Interaction -----
-  let autoRot = true, velY = 0.005, dragging = false, lastX = 0, lastY = 0, targetX = 0.05;
+  let autoRot = true, velY = 0.004, dragging = false, lastX = 0, lastY = 0, targetX = 0.04;
   const onDown = (x, y) => { dragging = true; autoRot = false; lastX = x; lastY = y; };
   const onMove = (x, y) => {
     if (!dragging) return;
     const dx = x - lastX, dy = y - lastY;
     ram.rotation.y += dx * 0.01;
-    targetX = Math.max(-0.7, Math.min(0.7, targetX + dy * 0.006));
+    targetX = Math.max(-0.6, Math.min(0.6, targetX + dy * 0.006));
     velY = dx * 0.0006; lastX = x; lastY = y;
   };
   const onUp = () => { dragging = false; setTimeout(() => { autoRot = true; }, 1400); };
@@ -273,29 +258,16 @@
   }
   window.addEventListener("resize", resize);
 
-  const traceColor = new THREE.Color();
   let t = 0;
   function animate() {
     requestAnimationFrame(animate);
     t += 0.016;
-    if (autoRot) ram.rotation.y += 0.004;
+    if (autoRot) ram.rotation.y += 0.0035;
     else { ram.rotation.y += velY; velY *= 0.95; }
     ram.rotation.x += (targetX - ram.rotation.x) * 0.08;
-    ram.position.y = Math.sin(t) * 0.1;
-
-    // flowing glow along traces (hue cycle + pulse offset per trace)
-    traces.forEach((tr, i) => {
-      traceColor.setHSL((0.5 + t * 0.03 + i * 0.04) % 1, 1, 0.55);
-      tr.material.emissive.copy(traceColor);
-      tr.material.emissiveIntensity = 0.35 + Math.max(0, Math.sin(t * 2.2 - i * 0.7)) * 0.7;
-    });
-    leds.forEach((led, i) => { led.material.emissiveIntensity = 0.5 + Math.max(0, Math.sin(t * 4 - i * 1.5)) * 1.7; });
-    labelMat.emissiveIntensity = 0.5 + Math.sin(t * 2) * 0.25;
-
-    particles.rotation.y += 0.0006; particles.rotation.x += 0.0003;
-    ring.rotation.z += 0.002;
-    cyan.intensity = 1.8 + Math.sin(t * 1.5) * 0.5;
-    violet.intensity = 1.6 + Math.cos(t * 1.2) * 0.5;
+    ram.position.y = Math.sin(t) * 0.08;
+    logoMat.emissiveIntensity = 0.45 + Math.sin(t * 1.6) * 0.18; // gentle logo breathe
+    particles.rotation.y += 0.0005;
     renderer.render(scene, camera);
   }
   resize();
@@ -359,9 +331,11 @@
   function install() {
     installed = true; slot.classList.remove("armed");
     const s = stage.getBoundingClientRect(), sr = slot.getBoundingClientRect();
+    // exact fit: dimm and slot share the same width, so centring aligns edges + key notch
     const tx = sr.left - s.left + (sr.width - dimm.offsetWidth) / 2;
-    const ty = sr.top - s.top - dimm.offsetHeight * 0.46;
-    dimm.style.transition = "left .22s cubic-bezier(.2,.9,.2,1), top .22s cubic-bezier(.2,.9,.2,1)";
+    // seat so the gold pins sink just into the slot mouth (then pins fade as they enter)
+    const ty = sr.top - s.top - dimm.offsetHeight + 16;
+    dimm.style.transition = "left .2s cubic-bezier(.2,.9,.2,1), top .26s cubic-bezier(.34,1.4,.5,1)";
     setPos(tx, ty);
     setTimeout(() => {
       dimm.classList.add("installed");

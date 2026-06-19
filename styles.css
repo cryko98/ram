@@ -198,9 +198,9 @@ code { font-family: "JetBrains Mono", monospace; }
 }
 /* soft radial aura behind the floating RAM */
 .canvas-stage::before {
-  content: ""; position: absolute; inset: 6%; z-index: 0; border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, rgba(122,92,255,0.30), rgba(0,229,255,0.12) 45%, transparent 70%);
-  filter: blur(26px); animation: auraPulse 5s ease-in-out infinite;
+  content: ""; position: absolute; inset: 8%; z-index: 0; border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, rgba(90,110,200,0.22), rgba(0,180,229,0.08) 45%, transparent 70%);
+  filter: blur(30px); animation: auraPulse 6s ease-in-out infinite;
 }
 @keyframes auraPulse { 0%,100% { transform: scale(.92); opacity: .8; } 50% { transform: scale(1.06); opacity: 1; } }
 #ram-canvas { position: relative; z-index: 1; width: 100%; height: 100%; display: block; cursor: grab; }
@@ -413,7 +413,7 @@ code { font-family: "JetBrains Mono", monospace; }
 /* DIMM slot */
 .dimm-slot {
   position: absolute; z-index: 2; left: 50%; top: 30%; transform: translateX(-50%);
-  width: min(72%, 520px); height: 30px; border-radius: 7px;
+  width: min(74%, 480px); height: 30px; border-radius: 7px;
   background: linear-gradient(180deg, #050608, #0e1014);
   border: 1px solid rgba(120,160,255,0.18);
   box-shadow: inset 0 4px 10px rgba(0,0,0,.7), inset 0 0 0 2px rgba(0,0,0,.4);
@@ -431,9 +431,9 @@ code { font-family: "JetBrains Mono", monospace; }
 .dimm-slot.filled .clip.left { transform: rotate(0deg); }
 .dimm-slot.filled .clip.right { transform: rotate(0deg); }
 
-/* draggable RAM module */
+/* draggable RAM module — same width as the slot so it seats edge-to-edge */
 .dimm {
-  position: absolute; z-index: 5; width: min(70%, 500px); height: 92px;
+  position: absolute; z-index: 5; width: min(74%, 480px); height: 96px;
   cursor: grab; user-select: none; touch-action: none;
   filter: drop-shadow(0 14px 22px rgba(0,0,0,.55));
 }
@@ -453,6 +453,8 @@ code { font-family: "JetBrains Mono", monospace; }
 .dimm-keynotch { position: absolute; bottom: -1px; left: 38%; width: 10px; height: 14px; background: #04100b; border-radius: 2px; }
 .dimm.installed .dimm-pcb { box-shadow: inset 0 0 18px rgba(0,0,0,.35), 0 0 28px rgba(0,229,255,.5); animation: seatPulse .5s ease; }
 .dimm.installed .dimm-label { animation: labelFlash 1.2s ease; }
+/* pins + key notch sink into the slot, so they vanish from view = clean seated fit */
+.dimm.installed .dimm-pins, .dimm.installed .dimm-keynotch { opacity: 0; transition: opacity .18s ease .1s; }
 @keyframes seatPulse { 0% { transform: translateY(-6px); } 60% { transform: translateY(2px); } 100% { transform: translateY(0); } }
 @keyframes labelFlash { 0%,100% { filter: drop-shadow(0 0 8px rgba(0,229,255,.6)); } 40% { filter: drop-shadow(0 0 22px rgba(0,229,255,1)); } }
 
@@ -482,15 +484,49 @@ code { font-family: "JetBrains Mono", monospace; }
 @media (max-width: 900px) {
   .hero-inner { grid-template-columns: 1fr; }
   .hero-3d { order: -1; }
-  .canvas-frame { max-width: 380px; }
+  .canvas-stage { max-width: 420px; margin: 0 auto; }
   .nav-links { display: none; }
   .story-grid { grid-template-columns: 1fr; }
   .news-grid { grid-template-columns: repeat(2, 1fr); }
   .tok-grid { grid-template-columns: repeat(2, 1fr); }
   .steps { grid-template-columns: repeat(2, 1fr); }
 }
+
 @media (max-width: 560px) {
   .news-grid, .tok-grid, .steps { grid-template-columns: 1fr; }
+  .nav { gap: 12px; padding: 12px 16px; }
   .nav-cta { display: none; }
-  .hero-actions .btn { flex: 1; justify-content: center; }
+
+  /* hero text + buttons fully responsive */
+  .hero { padding-top: 28px; }
+  .hero-title { font-size: clamp(2.4rem, 13vw, 3.4rem); }
+  .hero-sub { font-size: 1rem; }
+  .hero-actions { flex-direction: column; align-items: stretch; gap: 12px; }
+  .hero-actions .btn { width: 100%; justify-content: center; }
+  .btn-lg { padding: 14px 18px; font-size: 0.95rem; }
+  .ca-box { max-width: 100%; }
+  .ca-row code { font-size: 0.74rem; }
+
+  .section { padding-left: 16px; padding-right: 16px; }
+  .section-head h2 { font-size: clamp(1.6rem, 7vw, 2.1rem); }
+  .cta-final .btn { width: 100%; justify-content: center; }
+
+  /* install game on small screens */
+  .install-stage { height: clamp(320px, 80vw, 420px); }
+  .dimm-slot, .dimm { width: 86%; }
+  .dimm { height: 80px; }
+  .dimm-label { font-size: 1.2rem; }
+  .cpu-socket { width: 70px; height: 70px; right: 8%; }
+  .install-bar { flex-direction: column; align-items: stretch; }
+  .install-bar .eject-btn { width: 100%; justify-content: center; }
+  .install-hint { text-align: center; }
+
+  .footer-ca { font-size: 0.72rem; }
+  .socials { width: 100%; }
+  .social-btn { flex: 1; justify-content: center; }
+}
+
+@media (max-width: 380px) {
+  .brand-text { font-size: 1.05rem; }
+  .hero-title { font-size: clamp(2rem, 12vw, 2.6rem); }
 }
