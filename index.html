@@ -26,6 +26,26 @@
 <body>
   <!-- Animated grid background -->
   <div class="bg-grid"></div>
+
+  <!-- Motherboard circuit traces with flowing light -->
+  <svg class="circuit-bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g class="traces">
+      <path d="M0 120 H320 L380 180 H700 L760 120 H1100 L1160 180 H1440" />
+      <path d="M0 300 H180 L240 240 H560 L620 300 H980 L1040 360 H1440" />
+      <path d="M0 520 H260 L320 460 H640 L700 520 H1040 L1100 460 H1440" />
+      <path d="M0 720 H400 L460 660 H820 L880 720 H1200 L1260 780 H1440" />
+      <path d="M200 0 V160 L260 220 V520 L200 580 V900" />
+      <path d="M720 0 V120 L660 180 V460 L720 520 V900" />
+      <path d="M1180 0 V200 L1120 260 V560 L1180 620 V900" />
+    </g>
+    <g class="nodes">
+      <circle cx="320" cy="120" r="5" /><circle cx="760" cy="120" r="5" /><circle cx="1160" cy="180" r="5" />
+      <circle cx="240" cy="240" r="5" /><circle cx="620" cy="300" r="5" /><circle cx="1040" cy="360" r="5" />
+      <circle cx="320" cy="460" r="5" /><circle cx="700" cy="520" r="5" /><circle cx="1100" cy="460" r="5" />
+      <circle cx="460" cy="660" r="5" /><circle cx="880" cy="720" r="5" /><circle cx="1260" cy="780" r="5" />
+    </g>
+  </svg>
+
   <div class="bg-glow"></div>
   <div class="scanlines"></div>
 
@@ -39,6 +59,7 @@
       <a href="#about">Story</a>
       <a href="#news">Supply Shock</a>
       <a href="#tokenomics">Tokenomics</a>
+      <a href="#install">Install</a>
       <a href="#how">How to Buy</a>
     </nav>
     <div class="nav-right">
@@ -255,6 +276,68 @@
         </span>
         <span class="tok-value">0% Tax</span>
         <span class="tok-key">Buy / Sell</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTALL THE RAM (interactive) -->
+  <section class="section" id="install">
+    <div class="section-head">
+      <span class="kicker">// HANDS-ON</span>
+      <h2>Install your $RAM</h2>
+      <p class="section-intro">Drag the module down into the DIMM slot. Seat it until it clicks — then watch the board come alive.</p>
+    </div>
+
+    <div class="install-wrap glass">
+      <div class="install-stage" id="install-stage">
+        <!-- Motherboard PCB with traces -->
+        <svg class="mobo-traces" viewBox="0 0 900 460" preserveAspectRatio="none" aria-hidden="true">
+          <g class="m-traces">
+            <path d="M40 60 H300 L340 100 H620 M860 70 H700 L660 110 H470" />
+            <path d="M60 200 H260 L300 160 H520 M840 220 H640 L600 180 H470" />
+            <path d="M40 410 H240 L280 360 H470 M860 410 H660 L620 360 H470" />
+            <path d="M120 40 V160 M780 40 V150 M450 30 V120" />
+          </g>
+          <g class="m-nodes">
+            <circle cx="300" cy="60" r="6"/><circle cx="600" cy="200" r="6"/>
+            <circle cx="280" cy="360" r="6"/><circle cx="120" cy="160" r="6"/>
+            <circle cx="780" cy="150" r="6"/><circle cx="660" cy="110" r="6"/>
+          </g>
+        </svg>
+
+        <!-- onboard chips -->
+        <div class="mobo-chip c1"></div>
+        <div class="mobo-chip c2"></div>
+        <div class="cpu-socket"><span>CPU</span></div>
+
+        <!-- DIMM slot -->
+        <div class="dimm-slot" id="dimm-slot">
+          <span class="slot-notch"></span>
+          <span class="slot-label">DIMM&nbsp;0</span>
+          <span class="clip left"></span><span class="clip right"></span>
+        </div>
+
+        <!-- draggable RAM module -->
+        <div class="dimm" id="dimm" role="button" tabindex="0" aria-label="Draggable RAM module">
+          <div class="dimm-pcb">
+            <span class="dimm-chip"></span><span class="dimm-chip"></span>
+            <span class="dimm-chip"></span><span class="dimm-chip"></span>
+            <span class="dimm-label">$RAM</span>
+            <span class="dimm-pins"></span>
+            <span class="dimm-keynotch"></span>
+          </div>
+        </div>
+
+        <!-- success overlay -->
+        <div class="install-msg" id="install-msg">
+          <strong>RAM&nbsp;INSTALLED</strong>
+          <span>Supply&nbsp;shock&nbsp;activated · +110% performance</span>
+        </div>
+      </div>
+
+      <div class="install-bar">
+        <span class="install-hint">⟱ drag &amp; drop into the slot</span>
+        <button class="btn btn-ghost eject-btn" id="eject-btn" type="button">Eject &amp; retry</button>
       </div>
     </div>
   </section>

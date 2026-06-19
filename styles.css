@@ -42,6 +42,37 @@ code { font-family: "JetBrains Mono", monospace; }
 }
 @keyframes gridmove { to { background-position: 0 460px; } }
 
+/* Motherboard circuit traces with flowing light */
+.circuit-bg {
+  position: fixed; inset: 0; z-index: -2; width: 100%; height: 100%;
+  pointer-events: none; opacity: 0.5;
+  mask-image: radial-gradient(ellipse 90% 80% at 50% 30%, #000 30%, transparent 95%);
+}
+.circuit-bg .traces path {
+  fill: none; stroke: rgba(0,229,255,0.22); stroke-width: 1.5;
+}
+.circuit-bg .traces path:nth-child(even) { stroke: rgba(122,92,255,0.20); }
+/* flowing pulse overlay */
+.circuit-bg::after { content: none; }
+.circuit-bg .traces { filter: drop-shadow(0 0 3px rgba(0,229,255,0.25)); }
+.circuit-bg .nodes circle { fill: var(--accent); opacity: 0.5; animation: nodeBlink 3s ease-in-out infinite; }
+.circuit-bg .nodes circle:nth-child(3n) { fill: var(--accent-2); animation-delay: .8s; }
+.circuit-bg .nodes circle:nth-child(3n+1) { animation-delay: 1.6s; }
+@keyframes nodeBlink { 0%,100% { opacity: .25; } 50% { opacity: .9; filter: drop-shadow(0 0 6px var(--accent)); } }
+
+/* animated light dashes travelling along the traces */
+.circuit-bg .traces path {
+  stroke-dasharray: 14 220; animation: dashFlow 6s linear infinite;
+}
+.circuit-bg .traces path:nth-child(1) { animation-duration: 7s; }
+.circuit-bg .traces path:nth-child(2) { animation-duration: 9s; animation-delay: -2s; }
+.circuit-bg .traces path:nth-child(3) { animation-duration: 8s; animation-delay: -4s; }
+.circuit-bg .traces path:nth-child(4) { animation-duration: 10s; animation-delay: -1s; }
+.circuit-bg .traces path:nth-child(5) { animation-duration: 7.5s; animation-delay: -3s; }
+.circuit-bg .traces path:nth-child(6) { animation-duration: 8.5s; animation-delay: -5s; }
+.circuit-bg .traces path:nth-child(7) { animation-duration: 9.5s; animation-delay: -2.5s; }
+@keyframes dashFlow { to { stroke-dashoffset: -1200; } }
+
 .bg-glow {
   position: fixed; inset: 0; z-index: -2; pointer-events: none;
   background:
@@ -342,6 +373,110 @@ code { font-family: "JetBrains Mono", monospace; }
 .section.in .glass:nth-child(2) { transition-delay: .06s; }
 .section.in .glass:nth-child(3) { transition-delay: .12s; }
 .section.in .glass:nth-child(4) { transition-delay: .18s; }
+
+/* ---------- Install the RAM (interactive) ---------- */
+.install-wrap { max-width: 940px; margin: 0 auto; padding: clamp(18px, 3vw, 34px); }
+.install-stage {
+  position: relative; width: 100%; height: clamp(360px, 52vw, 470px);
+  border-radius: 16px; overflow: hidden; touch-action: none;
+  background:
+    radial-gradient(120% 100% at 50% 0%, rgba(16,60,40,0.6), transparent 60%),
+    linear-gradient(160deg, #06160f, #04100b 60%, #061a12);
+  border: 1px solid rgba(43,255,155,0.18);
+  box-shadow: inset 0 0 80px rgba(0,0,0,0.6);
+}
+/* motherboard surface tint shifts when powered */
+.install-stage::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(60% 60% at 50% 45%, rgba(0,229,255,0.10), transparent 70%);
+  opacity: 0; transition: opacity .6s ease;
+}
+.install-stage.powered::before { opacity: 1; }
+
+/* mobo traces */
+.mobo-traces { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
+.mobo-traces .m-traces path { fill: none; stroke: rgba(43,255,155,0.30); stroke-width: 2; stroke-dasharray: 10 160; animation: dashFlow 7s linear infinite; }
+.mobo-traces .m-traces path:nth-child(2) { stroke: rgba(0,229,255,0.30); animation-duration: 9s; }
+.mobo-traces .m-traces path:nth-child(3) { stroke: rgba(122,92,255,0.28); animation-duration: 8s; }
+.mobo-traces .m-nodes circle { fill: rgba(43,255,155,0.6); }
+.install-stage.powered .mobo-traces .m-traces path { stroke-width: 2.6; filter: drop-shadow(0 0 6px rgba(0,229,255,0.6)); animation-duration: 2.4s; }
+.install-stage.powered .mobo-traces .m-traces path:nth-child(1){ stroke: rgba(0,255,180,.8);}
+.install-stage.powered .mobo-traces .m-nodes circle { fill: var(--accent); filter: drop-shadow(0 0 6px var(--accent)); }
+
+/* onboard chips + cpu socket */
+.mobo-chip { position: absolute; z-index: 1; border-radius: 4px; background: linear-gradient(145deg, #1a1a1f, #0c0c10); border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 0 8px rgba(0,0,0,.6); }
+.mobo-chip.c1 { width: 64px; height: 64px; left: 7%; top: 60%; }
+.mobo-chip.c2 { width: 50px; height: 50px; right: 8%; top: 24%; }
+.cpu-socket { position: absolute; z-index: 1; right: 12%; top: 52%; width: 96px; height: 96px; border-radius: 6px; display: grid; place-items: center; background: repeating-linear-gradient(0deg,#15151a 0 4px,#0d0d12 4px 8px), repeating-linear-gradient(90deg,#15151a 0 4px,#0d0d12 4px 8px); border: 2px solid rgba(242,194,74,0.35); font-family: "JetBrains Mono", monospace; font-size: .7rem; color: rgba(242,194,74,.6); letter-spacing: .1em; }
+.install-stage.powered .cpu-socket { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 22px rgba(0,229,255,.45); }
+
+/* DIMM slot */
+.dimm-slot {
+  position: absolute; z-index: 2; left: 50%; top: 30%; transform: translateX(-50%);
+  width: min(72%, 520px); height: 30px; border-radius: 7px;
+  background: linear-gradient(180deg, #050608, #0e1014);
+  border: 1px solid rgba(120,160,255,0.18);
+  box-shadow: inset 0 4px 10px rgba(0,0,0,.7), inset 0 0 0 2px rgba(0,0,0,.4);
+  display: flex; align-items: center; justify-content: center;
+  transition: box-shadow .25s, border-color .25s;
+}
+.slot-notch { position: absolute; left: 38%; top: -2px; bottom: -2px; width: 8px; background: #04100b; border-radius: 3px; }
+.slot-label { font-family: "JetBrains Mono", monospace; font-size: .64rem; color: var(--muted); letter-spacing: .14em; opacity: .6; }
+.dimm-slot .clip { position: absolute; top: -14px; width: 14px; height: 26px; border-radius: 4px; background: linear-gradient(180deg,#2a3450,#141a2c); border: 1px solid rgba(120,160,255,0.2); transition: transform .25s; }
+.dimm-slot .clip.left { left: -16px; transform: rotate(-16deg); }
+.dimm-slot .clip.right { right: -16px; transform: rotate(16deg); }
+.dimm-slot.armed { border-color: var(--green); box-shadow: 0 0 0 2px rgba(43,255,155,.4), 0 0 26px rgba(43,255,155,.45), inset 0 4px 10px rgba(0,0,0,.7); }
+.dimm-slot.armed .slot-label { color: var(--green); opacity: 1; }
+.dimm-slot.filled { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(0,229,255,.45), 0 0 30px rgba(0,229,255,.5), inset 0 4px 10px rgba(0,0,0,.7); }
+.dimm-slot.filled .clip.left { transform: rotate(0deg); }
+.dimm-slot.filled .clip.right { transform: rotate(0deg); }
+
+/* draggable RAM module */
+.dimm {
+  position: absolute; z-index: 5; width: min(70%, 500px); height: 92px;
+  cursor: grab; user-select: none; touch-action: none;
+  filter: drop-shadow(0 14px 22px rgba(0,0,0,.55));
+}
+.dimm.dragging { cursor: grabbing; z-index: 6; filter: drop-shadow(0 22px 30px rgba(0,229,255,.4)); }
+.dimm-pcb {
+  position: relative; width: 100%; height: 100%; border-radius: 8px 8px 5px 5px;
+  background: linear-gradient(170deg, #0f8a47, #0a6e38 70%, #085c2f);
+  border: 1px solid rgba(0,0,0,.4);
+  box-shadow: inset 0 0 18px rgba(0,0,0,.35);
+  display: flex; align-items: center; gap: 4%; padding: 12px 9% 22px;
+}
+.dimm-chip { flex: 1; height: 46px; border-radius: 3px; background: linear-gradient(160deg,#1c1c22,#0c0c10); border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 0 6px rgba(0,0,0,.6); position: relative; }
+.dimm-chip::before, .dimm-chip::after { content: ""; position: absolute; left: 16%; right: 16%; height: 4px; background: #050507; border-radius: 2px; }
+.dimm-chip::before { top: 32%; } .dimm-chip::after { top: 60%; }
+.dimm-label { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center; font-family: "Orbitron", sans-serif; font-weight: 900; font-size: 1.5rem; letter-spacing: .04em; background: linear-gradient(120deg,var(--accent),#fff,var(--accent-3)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 8px rgba(0,229,255,.6)); pointer-events: none; }
+.dimm-pins { position: absolute; left: 4%; right: 4%; bottom: 3px; height: 12px; border-radius: 0 0 4px 4px; background: repeating-linear-gradient(90deg, #f2c24a 0 5px, #0a6e38 5px 7px); box-shadow: 0 0 8px rgba(242,194,74,.4); }
+.dimm-keynotch { position: absolute; bottom: -1px; left: 38%; width: 10px; height: 14px; background: #04100b; border-radius: 2px; }
+.dimm.installed .dimm-pcb { box-shadow: inset 0 0 18px rgba(0,0,0,.35), 0 0 28px rgba(0,229,255,.5); animation: seatPulse .5s ease; }
+.dimm.installed .dimm-label { animation: labelFlash 1.2s ease; }
+@keyframes seatPulse { 0% { transform: translateY(-6px); } 60% { transform: translateY(2px); } 100% { transform: translateY(0); } }
+@keyframes labelFlash { 0%,100% { filter: drop-shadow(0 0 8px rgba(0,229,255,.6)); } 40% { filter: drop-shadow(0 0 22px rgba(0,229,255,1)); } }
+
+/* success message */
+.install-msg {
+  position: absolute; z-index: 7; left: 50%; bottom: 16px; transform: translate(-50%, 14px);
+  text-align: center; opacity: 0; pointer-events: none; transition: opacity .4s ease, transform .4s ease;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.install-msg.show { opacity: 1; transform: translate(-50%, 0); }
+.install-msg strong { font-family: "Orbitron", sans-serif; font-size: 1.1rem; letter-spacing: .08em; color: var(--green); text-shadow: 0 0 16px rgba(43,255,155,.7); }
+.install-msg span { font-family: "JetBrains Mono", monospace; font-size: .76rem; color: var(--accent); }
+
+/* spark particles + shockwave */
+.spark { position: absolute; z-index: 8; width: 7px; height: 7px; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); animation: sparkFly .9s ease-out forwards; box-shadow: 0 0 8px currentColor; }
+@keyframes sparkFly { 0% { transform: translate(-50%, -50%) translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) scale(.2); opacity: 0; } }
+.shockwave { position: absolute; z-index: 7; width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--accent); transform: translate(-50%, -50%); pointer-events: none; animation: shock .8s ease-out forwards; }
+@keyframes shock { 0% { width: 20px; height: 20px; opacity: .9; } 100% { width: 360px; height: 360px; opacity: 0; } }
+
+/* control bar */
+.install-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 16px; flex-wrap: wrap; }
+.install-hint { font-family: "JetBrains Mono", monospace; font-size: .8rem; color: var(--muted); letter-spacing: .05em; }
+.eject-btn { opacity: .45; pointer-events: none; transition: opacity .3s; padding: 10px 18px; }
+.eject-btn.show { opacity: 1; pointer-events: auto; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
