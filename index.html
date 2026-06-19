@@ -41,7 +41,12 @@
       <a href="#tokenomics">Tokenomics</a>
       <a href="#how">How to Buy</a>
     </nav>
-    <a class="btn btn-primary nav-cta" href="https://pump.fun/coin/G5grLASvz1xzgdh1c1GKy2q55mfuDDXhMQoXnDxWpump" target="_blank" rel="noopener">Buy $RAM</a>
+    <div class="nav-right">
+      <a class="icon-link x-link" href="https://x.com/ramcoincto?s=11" target="_blank" rel="noopener" aria-label="RAMCOIN on X">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+      <a class="btn btn-primary nav-cta" href="https://pump.fun/coin/G5grLASvz1xzgdh1c1GKy2q55mfuDDXhMQoXnDxWpump" target="_blank" rel="noopener">Buy $RAM</a>
+    </div>
   </header>
 
   <!-- HERO -->
@@ -62,7 +67,8 @@
         </p>
         <div class="hero-actions">
           <a class="btn btn-primary btn-lg" href="https://pump.fun/coin/G5grLASvz1xzgdh1c1GKy2q55mfuDDXhMQoXnDxWpump" target="_blank" rel="noopener">
-            ⚡ Buy on pump.fun
+            <svg class="ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12z"/></svg>
+            Buy on pump.fun
           </a>
           <a class="btn btn-ghost btn-lg" href="#about">Read the Story</a>
         </div>
@@ -77,15 +83,17 @@
         </div>
       </div>
 
-      <!-- 3D RAM canvas -->
+      <!-- 3D RAM — free floating, no frame -->
       <div class="hero-3d">
-        <div class="canvas-frame">
+        <div class="canvas-stage">
           <canvas id="ram-canvas"></canvas>
           <div class="canvas-fallback" id="canvas-fallback">
             <img src="assets/logo.jpg" alt="RAMCOIN" />
           </div>
         </div>
-        <div class="canvas-tag">DDR5 · INTERACTIVE — drag to spin</div>
+        <div class="canvas-tag">
+          <span class="pulse-ring"></span> DDR5 · drag to spin
+        </div>
       </div>
     </div>
 
@@ -164,37 +172,37 @@
         <div class="news-tag">DEMAND</div>
         <h3>AI is eating the world's memory</h3>
         <p>AI is projected to consume around 20% of total DRAM production in 2026, starving consumer PCs, phones and servers of supply.</p>
-        <a href="https://spectrum.ieee.org/dram-shortage" target="_blank" rel="noopener">IEEE Spectrum ↗</a>
+        <a href="https://spectrum.ieee.org/dram-shortage" target="_blank" rel="noopener">IEEE Spectrum <svg class="ic-arrow" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
       </article>
       <article class="news-card glass">
         <div class="news-tag">PRICE</div>
         <h3>DRAM prices set to double</h3>
         <p>Memory prices are expected to double in Q1 2026 as AI ambitions push memory fabs to their absolute limit.</p>
-        <a href="https://www.theregister.com/2026/02/02/dram_prices_expected_to_double/" target="_blank" rel="noopener">The Register ↗</a>
+        <a href="https://www.theregister.com/2026/02/02/dram_prices_expected_to_double/" target="_blank" rel="noopener">The Register <svg class="ic-arrow" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
       </article>
       <article class="news-card glass">
         <div class="news-tag">SOLD OUT</div>
         <h3>AI memory is sold out</h3>
         <p>HBM for AI accelerators is effectively sold out, causing an unprecedented surge in prices across the memory market.</p>
-        <a href="https://www.cnbc.com/2026/01/10/micron-ai-memory-shortage-hbm-nvidia-samsung.html" target="_blank" rel="noopener">CNBC ↗</a>
+        <a href="https://www.cnbc.com/2026/01/10/micron-ai-memory-shortage-hbm-nvidia-samsung.html" target="_blank" rel="noopener">CNBC <svg class="ic-arrow" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
       </article>
       <article class="news-card glass">
         <div class="news-tag">SUPPLY</div>
         <h3>Only two suppliers left</h3>
         <p>With Micron winding down Crucial consumer products, Samsung and SK Hynix are left as the dominant suppliers of consumer DRAM.</p>
-        <a href="https://wccftech.com/roundup/memory-crisis/" target="_blank" rel="noopener">Wccftech ↗</a>
+        <a href="https://wccftech.com/roundup/memory-crisis/" target="_blank" rel="noopener">Wccftech <svg class="ic-arrow" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
       </article>
       <article class="news-card glass">
         <div class="news-tag">HBM</div>
         <h3>HBM takes 23% of DRAM wafers</h3>
         <p>High-bandwidth memory now consumes a huge slice of total wafer output, squeezing everything else off the line.</p>
-        <a href="https://tech-insider.org/memory-chip-shortage-2026-ai-consumer-electronics/" target="_blank" rel="noopener">Tech-Insider ↗</a>
+        <a href="https://tech-insider.org/memory-chip-shortage-2026-ai-consumer-electronics/" target="_blank" rel="noopener">Tech-Insider <svg class="ic-arrow" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
       </article>
       <article class="news-card glass">
         <div class="news-tag">CONSUMER</div>
         <h3>What's going on with RAM?</h3>
         <p>Surging prices, AI demand and global tech market disruption have made RAM the most talked-about component on the internet.</p>
-        <a href="https://www.windowscentral.com/hardware/ram-price-crisis-what-need-know" target="_blank" rel="noopener">Windows Central ↗</a>
+        <a href="https://www.windowscentral.com/hardware/ram-price-crisis-what-need-know" target="_blank" rel="noopener">Windows Central <svg class="ic-arrow" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
       </article>
     </div>
   </section>
@@ -207,23 +215,45 @@
     </div>
     <div class="tok-grid">
       <div class="tok-card glass">
-        <span class="tok-icon">🧠</span>
+        <span class="tok-icon">
+          <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="5" y="7" width="14" height="10" rx="1.5"/>
+            <path d="M8 7V4M12 7V4M16 7V4M8 20v-3M12 20v-3M16 20v-3M3 10h2M3 14h2M19 10h2M19 14h2"/>
+            <rect x="8.5" y="10" width="3" height="4" rx=".5"/><rect x="12.5" y="10" width="3" height="4" rx=".5"/>
+          </svg>
+        </span>
         <span class="tok-value">$RAM</span>
         <span class="tok-key">Ticker</span>
       </div>
       <div class="tok-card glass">
-        <span class="tok-icon">🟣</span>
+        <span class="tok-icon">
+          <svg viewBox="0 0 24 24" width="34" height="34" aria-hidden="true">
+            <path fill="currentColor" d="M5.4 16.3c.2-.2.4-.3.7-.3h14.1c.4 0 .6.5.3.8l-3.1 3.1c-.2.2-.4.3-.7.3H2.6c-.4 0-.6-.5-.3-.8z"/>
+            <path fill="currentColor" opacity=".7" d="M5.4 4.1c.2-.2.5-.3.7-.3h14.1c.4 0 .6.5.3.8l-3.1 3.1c-.2.2-.4.3-.7.3H2.6c-.4 0-.6-.5-.3-.8z"/>
+            <path fill="currentColor" opacity=".85" d="M18.6 10.2c-.2-.2-.4-.3-.7-.3H3.8c-.4 0-.6.5-.3.8l3.1 3.1c.2.2.4.3.7.3h14.1c.4 0 .6-.5.3-.8z"/>
+          </svg>
+        </span>
         <span class="tok-value">Solana</span>
         <span class="tok-key">Network</span>
       </div>
       <div class="tok-card glass">
-        <span class="tok-icon">🔒</span>
+        <span class="tok-icon">
+          <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3c1.8 3 1 5-1 6.5-1.6 1.2-2.4 2.8-1.6 4.5"/>
+            <path d="M12 21c4.2 0 7-2.8 7-6.5 0-2.6-1.3-4.4-2.8-5.8.4 2.2-.6 3.4-1.7 3.9.6-2.6-.7-5.6-3-7.6.3 3.6-1.4 5.2-3 6.8C7 13.2 5 14.6 5 17c0 2.4 2.6 4 7 4Z"/>
+          </svg>
+        </span>
         <span class="tok-value">Burned</span>
         <span class="tok-key">Liquidity</span>
       </div>
       <div class="tok-card glass">
-        <span class="tok-icon">0%</span>
-        <span class="tok-value">Tax</span>
+        <span class="tok-icon">
+          <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 2.5 4 6v5.5c0 4.6 3.2 8.4 8 9.9 4.8-1.5 8-5.3 8-9.9V6z"/>
+            <path d="M15 9 9 15M9.5 9.5h.01M14.5 14.5h.01"/>
+          </svg>
+        </span>
+        <span class="tok-value">0% Tax</span>
         <span class="tok-key">Buy / Sell</span>
       </div>
     </div>
@@ -258,7 +288,10 @@
       </div>
     </div>
     <div class="cta-final">
-      <a class="btn btn-primary btn-lg" href="https://pump.fun/coin/G5grLASvz1xzgdh1c1GKy2q55mfuDDXhMQoXnDxWpump" target="_blank" rel="noopener">⚡ Buy $RAM now</a>
+      <a class="btn btn-primary btn-lg" href="https://pump.fun/coin/G5grLASvz1xzgdh1c1GKy2q55mfuDDXhMQoXnDxWpump" target="_blank" rel="noopener">
+        <svg class="ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12z"/></svg>
+        Buy $RAM now
+      </a>
     </div>
   </section>
 
@@ -268,6 +301,16 @@
       <div class="footer-brand">
         <span class="brand-logo small"><img src="assets/logo.jpg" alt="RAMCOIN logo" /></span>
         <span class="brand-text">RAM<span class="accent">COIN</span></span>
+      </div>
+      <div class="socials">
+        <a class="social-btn" href="https://x.com/ramcoincto?s=11" target="_blank" rel="noopener" aria-label="RAMCOIN on X">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          <span>Follow on X</span>
+        </a>
+        <a class="social-btn" href="https://pump.fun/coin/G5grLASvz1xzgdh1c1GKy2q55mfuDDXhMQoXnDxWpump" target="_blank" rel="noopener" aria-label="RAMCOIN on pump.fun">
+          <svg class="ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12z"/></svg>
+          <span>pump.fun</span>
+        </a>
       </div>
       <p class="footer-ca"><span>CA:</span> G5grLASvz1xzgdh1c1GKy2q55mfuDDXhMQoXnDxWpump</p>
       <p class="disclaimer">
